@@ -26,18 +26,26 @@
 
         await chrome.storage.local.set({ "captchaIsVisible": false });
 
-        // 🔄 After finishing, reload **first page** after delay
-        console.log(`Cycle finished. Reloading first page in ${(recheckIntervalInMs / 1000)}s`);
-        setTimeout(() => {
-            // click page=1 button to go back to first page
-            const firstPageBtn = document.querySelector('button[data-testid="pagination-button"][page="1"]');
-            if (firstPageBtn) {
-                firstPageBtn.click();
-            } else {
-                // fallback: reload whole site
+        // after finishing the last page
+        const firstPageBtn = document.querySelector('button[data-testid="pagination-button"][page="1"]');
+        if (firstPageBtn) {
+            console.log("Going back to page 1...");
+            firstPageBtn.click();
+            console.log(`Reloading first page after ${Math.round(recheckIntervalInMs / 1000)}s...`);
+
+            // wait ~60s before reloading
+            setTimeout(() => {
                 location.reload();
-            }
-        }, recheckIntervalInMs);
+            }, recheckIntervalInMs);
+
+        } else {
+            // fallback: just reload site after interval
+            console.log(`Page 1 button not found, reloading directly after ${Math.round(recheckIntervalInMs / 1000)}s...`);
+            setTimeout(() => {
+                location.reload();
+            }, recheckIntervalInMs);
+        }
+
     }
 
     // ------------------- FUNCTIONS -------------------
